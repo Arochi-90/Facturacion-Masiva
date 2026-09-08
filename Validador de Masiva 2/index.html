@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Validador de Plantillas · Facturama Facturación Masiva</title>
+<link rel="icon" href="assets/logo-colour.svg">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  :root {
+    /* Facturama brand tokens (2025) */
+    --navy:#002D79; --blue:#0075DD; --green:#038A06; --green-hover:#026E05;
+    --midnight:#001B40; --light-blue:#EEF6FC; --cream:#FFF9E8; --white:#FFFFFF;
+    --grey-900:#001B40; --grey-700:#576981; --grey-500:#99A4B3;
+    --grey-200:#E6E9EC; --grey-100:#F2F3F5; --grey-50:#F6F7F8;
+    --red-100:#FEF5F7; --red-800:#DF2F4A; --red-900:#AC1B31;
+    --green-100:#E5F3E6;
+    --headline: 'Founders Grotesk','Inter','Helvetica Neue',Arial,sans-serif;
+    --body: 'Inter','Helvetica Neue',Arial,sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: var(--body); background: var(--grey-50);
+    color: var(--grey-900); line-height: 1.6;
+  }
+
+  /* Header — navy bg + white logo */
+  header {
+    background: var(--navy); padding: 20px 32px;
+    display: flex; align-items: center; gap: 20px;
+  }
+  header img.logo { height: 34px; width: auto; }
+  header .titles { border-left: 1px solid rgba(255,255,255,.25); padding-left: 20px; }
+  header h1 { font-family: var(--headline); font-weight: 500; font-size: 19px; margin: 0; color: #fff; }
+  header .sub { color: #C6D6EE; font-size: 13px; }
+
+  main { max-width: 1000px; margin: 0 auto; padding: 32px 20px 80px; }
+
+  /* Dropzone */
+  .drop {
+    border: 2px dashed var(--grey-200); border-radius: 10px; padding: 48px 20px;
+    text-align: center; background: var(--white); transition: .15s; cursor: pointer;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.04);
+  }
+  .drop.drag { border-color: var(--blue); background: var(--light-blue); }
+  .drop h2 { font-family: var(--headline); font-weight: 500; margin: 12px 0 6px; font-size: 22px; color: var(--grey-900); }
+  .drop p { color: var(--grey-700); margin: 4px 0; font-size: 14px; }
+  .drop .eyebrow { font-size: 12px; text-transform: uppercase; letter-spacing:.6px; font-weight:600; color: var(--blue); }
+  .drop .iconbox { width:64px;height:64px;border-radius:10px;background:var(--light-blue);
+    display:inline-flex;align-items:center;justify-content:center;margin-bottom:6px; }
+  .drop .iconbox svg { width:32px;height:32px;stroke:var(--midnight);fill:none;stroke-width:1.6; }
+  input[type=file] { display: none; }
+
+  /* Banner */
+  .banner {
+    margin: 24px 0; padding: 18px 20px; border-radius: 10px; background: var(--white);
+    box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+    display:flex; flex-wrap:wrap; gap:20px; align-items:center;
+  }
+  .pill { padding: 5px 14px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+  .pill.ok { background: var(--green-100); color: var(--green); }
+  .pill.err { background: var(--red-100); color: var(--red-900); }
+  .pill.warn { background: var(--cream); color: #8A6D00; }
+  .banner .stat { display:flex; flex-direction:column; }
+  .banner .stat b { font-family: var(--headline); font-size: 24px; font-weight:500; color: var(--navy); }
+  .banner .stat span { color: var(--grey-700); font-size: 12px; }
+
+  section.block { margin-top: 28px; }
+  section.block > h3 { font-size: 12px; text-transform: uppercase; letter-spacing:.6px;
+    color: var(--grey-700); font-weight:600; margin: 0 0 12px; }
+
+  .issue {
+    background: var(--white); border-left: 4px solid var(--red-800);
+    border-radius: 8px; padding: 12px 16px; margin-bottom: 8px; font-size: 14px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.04);
+  }
+  .issue.head { border-left-color: var(--blue); }
+
+  .rowcard {
+    background: var(--white); border-radius: 10px; margin-bottom: 10px; overflow: hidden;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+  }
+  .rowcard .rhead {
+    padding: 12px 16px; background: var(--light-blue); display:flex; justify-content:space-between;
+    cursor:pointer; font-weight:600; font-size:14px; color: var(--grey-900);
+  }
+  .rowcard .rhead .cnt { color: var(--red-900); font-size: 13px; }
+  .rowcard ul { margin: 0; padding: 12px 16px 14px 32px; }
+  .rowcard li { font-size: 14px; margin: 5px 0; color: var(--grey-900); }
+
+  /* Buttons — Facturama marketing rules: green primary, 6px radius */
+  .toolbar { display:flex; gap:10px; margin: 20px 0; flex-wrap: wrap; }
+  button.btn {
+    font-family: var(--body); font-size: 15px; font-weight: 600; cursor: pointer;
+    border-radius: 6px; padding: 13px 26px; border: 0;
+    background: var(--green); color:#fff;
+  }
+  button.btn:hover { background: var(--green-hover); }
+  button.btn.secondary {
+    background: transparent; border: 2px solid var(--navy); color: var(--navy); padding: 11px 24px;
+  }
+  button.btn.secondary:hover { background: var(--navy); color:#fff; }
+
+  .empty { text-align:center; color: var(--grey-700); padding: 36px; background: var(--white);
+    border-radius: 10px; box-shadow: 0 2px 16px rgba(0,0,0,0.04); font-size: 15px; }
+  .empty.ok { color: var(--green); font-weight:600; }
+  code { background: var(--grey-100); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  a { color: var(--blue); }
+  .foot { color: var(--grey-500); font-size: 12px; margin-top: 44px; text-align:center; }
+</style>
+</head>
+<body>
+<header>
+  <img class="logo" src="assets/logo-white.svg" alt="Facturama by FreshBooks">
+  <div class="titles">
+    <h1>Validador de Plantillas · Facturación Masiva</h1>
+    <div class="sub">Revisa el .CSV antes de timbrar. Todo se procesa en tu navegador — nada se sube a ningún servidor.</div>
+  </div>
+</header>
+
+<main>
+  <label class="drop" id="drop" for="file">
+    <div class="iconbox">
+      <svg viewBox="0 0 24 24"><path d="M12 16V4M12 4l-4 4M12 4l4 4M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="eyebrow">Soporte · Facturación Masiva</div>
+    <h2>Arrastra el archivo .CSV aquí o haz clic para elegirlo</h2>
+    <p>El cliente comparte su plantilla y aquí ves justo qué corregir, en pasos simples.</p>
+    <p style="font-size:12px">Detecta sola la plantilla: Factura, Complemento de Pago, Global, Nota de Crédito, Retenciones…</p>
+    <input type="file" id="file" accept=".csv,text/csv">
+  </label>
+
+  <div id="output"></div>
+
+  <div class="foot">
+    Herramienta interna de soporte · Facturama Facturación Masiva · Validación local (sin base de datos)
+  </div>
+</main>
+
+<script src="catalogos.js"></script>
+<script src="plantillas.js"></script>
+<script src="validador.js"></script>
+<script>
+  const drop = document.getElementById("drop");
+  const fileInput = document.getElementById("file");
+  const output = document.getElementById("output");
+  let ultimoResultado = null;
+  let ultimoNombre = "";
+
+  ["dragenter","dragover"].forEach(ev => drop.addEventListener(ev, e => {
+    e.preventDefault(); drop.classList.add("drag");
+  }));
+  ["dragleave","drop"].forEach(ev => drop.addEventListener(ev, e => {
+    e.preventDefault(); drop.classList.remove("drag");
+  }));
+  drop.addEventListener("drop", e => {
+    const f = e.dataTransfer.files[0]; if (f) leer(f);
+  });
+  fileInput.addEventListener("change", e => {
+    const f = e.target.files[0]; if (f) leer(f);
+  });
+
+  function leer(file) {
+    ultimoNombre = file.name;
+    const reader = new FileReader();
+    reader.onload = () => procesar(reader.result);
+    reader.readAsText(file, "UTF-8");
+  }
+
+  function esc(s){ return String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+
+  function procesar(texto) {
+    const res = validarArchivo(texto);
+    ultimoResultado = res;
+    if (res.error) { output.innerHTML = `<div class="empty">${esc(res.error)}</div>`; return; }
+
+    const totalProblemas = res.resumen.filasConError + res.resumen.problemasEncabezado;
+    const okPill = totalProblemas === 0
+      ? `<span class="pill ok">¡Todo en orden!</span>`
+      : `<span class="pill err">${totalProblemas} punto(s) a corregir</span>`;
+    const confPill = res.confianza >= 50
+      ? `<span class="pill ok">Plantilla: ${esc(res.plantilla)} · ${res.confianza}%</span>`
+      : `<span class="pill warn">Plantilla incierta · ${res.confianza}%</span>`;
+
+    let html = `<div class="banner">
+      ${confPill} ${okPill}
+      <div class="stat"><b>${res.totalFilas}</b><span>filas de datos</span></div>
+      <div class="stat"><b>${res.resumen.filasConError}</b><span>filas con error</span></div>
+      <div class="stat"><b>${res.resumen.problemasEncabezado}</b><span>problemas de encabezado</span></div>
+    </div>`;
+
+    html += `<div class="toolbar">
+      <button class="btn" onclick="copiarResumen()">Copiar reporte para el cliente</button>
+      <button class="btn secondary" onclick="descargar()">Descargar reporte (.txt)</button>
+      <button class="btn secondary" onclick="location.reload()">Validar otro archivo</button>
+    </div>`;
+
+    if (res.encabezado.length) {
+      html += `<section class="block"><h3>Estructura / encabezado</h3>`;
+      for (const p of res.encabezado)
+        html += `<div class="issue head">${esc(p.mensaje)}</div>`;
+      html += `</section>`;
+    }
+
+    if (res.resumen.tiposComunes.length) {
+      html += `<section class="block"><h3>Errores más frecuentes</h3>`;
+      for (const [k, n] of res.resumen.tiposComunes)
+        html += `<div class="issue">${esc(k)} — <b>${n}</b> ocurrencia(s)</div>`;
+      html += `</section>`;
+    }
+
+    if (res.filas.length) {
+      html += `<section class="block"><h3>Detalle por fila</h3>`;
+      for (const f of res.filas) {
+        const id = f.noFactura ? ` · No. Factura ${esc(f.noFactura)}` : "";
+        html += `<div class="rowcard">
+          <div class="rhead" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display==='none'?'block':'none'">
+            <span>Fila ${f.fila}${id}</span>
+            <span class="cnt">${f.errores.length} error(es) ▾</span>
+          </div>
+          <ul>${f.errores.map(e => `<li>${esc(e)}</li>`).join("")}</ul>
+        </div>`;
+      }
+      html += `</section>`;
+    } else if (res.encabezado.length === 0) {
+      html += `<div class="empty ok">¡Todo listo! No encontramos errores. La plantilla parece lista para timbrar.</div>`;
+    }
+
+    output.innerHTML = html;
+  }
+
+  function reporteTexto() {
+    const r = ultimoResultado; if (!r) return "";
+    let t = `REPORTE DE VALIDACIÓN — Facturama Facturación Masiva\n`;
+    t += `Archivo: ${ultimoNombre}\n`;
+    t += `Plantilla detectada: ${r.plantilla} (${r.confianza}% de coincidencia)\n`;
+    t += `Filas de datos: ${r.totalFilas} · Filas con error: ${r.resumen.filasConError}\n`;
+    t += `${"=".repeat(60)}\n\n`;
+    if (r.encabezado.length) {
+      t += `ESTRUCTURA / ENCABEZADO:\n`;
+      r.encabezado.forEach(p => t += `  • ${p.mensaje}\n`);
+      t += `\n`;
+    }
+    if (r.filas.length) {
+      t += `DETALLE POR FILA:\n`;
+      r.filas.forEach(f => {
+        t += `  Fila ${f.fila}${f.noFactura ? " (No. Factura " + f.noFactura + ")" : ""}:\n`;
+        f.errores.forEach(e => t += `      - ${e}\n`);
+      });
+    }
+    if (!r.encabezado.length && !r.filas.length)
+      t += `¡Todo listo! No encontramos errores. La plantilla parece lista para timbrar.\n`;
+    return t;
+  }
+
+  function copiarResumen() {
+    navigator.clipboard.writeText(reporteTexto())
+      .then(() => alert("Reporte copiado al portapapeles."))
+      .catch(() => alert("No se pudo copiar automáticamente."));
+  }
+  function descargar() {
+    const blob = new Blob([reporteTexto()], { type: "text/plain;charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "reporte_validacion_" + (ultimoNombre || "plantilla") + ".txt";
+    a.click();
+  }
+</script>
+</body>
+</html>
