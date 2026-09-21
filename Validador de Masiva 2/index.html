@@ -52,6 +52,13 @@
   .drop .iconbox { width:64px;height:64px;border-radius:10px;background:var(--light-blue);
     display:flex;align-items:center;justify-content:center;margin:0 auto 6px;flex:none; }
   .drop .iconbox svg { display:block;width:32px;height:32px;stroke:var(--midnight);fill:none;stroke-width:1.6; }
+
+  /* Recuadro punteado que encuadra las instrucciones */
+  .drop .instrucciones {
+    border: 2px dotted var(--grey-500); border-radius: 10px;
+    padding: 20px 24px; max-width: 640px; margin: 14px auto 0;
+  }
+  .drop.drag .instrucciones { border-color: var(--blue); }
   input[type=file] { display: none; }
 
   /* Banner */
@@ -110,6 +117,17 @@
   code { background: var(--grey-100); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
   a { color: var(--blue); }
   .foot { color: var(--grey-500); font-size: 12px; margin-top: 44px; text-align:center; }
+
+  @media (max-width: 480px) {
+    header { padding: 16px 18px; gap: 14px; flex-wrap: wrap; }
+    header .titles { border-left: 0; padding-left: 0; }
+    header h1 { font-size: 17px; }
+    main { padding: 20px 14px 56px; }
+    .drop { padding: 28px 14px; }
+    .drop h2 { font-size: 18px; }
+    .drop .instrucciones { padding: 16px 14px; }
+    .toolbar button.btn { flex: 1 1 100%; }
+  }
 </style>
 </head>
 <body>
@@ -126,10 +144,12 @@
     <div class="iconbox">
       <svg viewBox="0 0 24 24"><path d="M12 16V4M12 4l-4 4M12 4l4 4M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </div>
-    <div class="eyebrow">Soporte · Facturación Masiva</div>
-    <h2>Arrastra el archivo .CSV aquí o haz clic para elegirlo</h2>
-    <p>El cliente comparte su plantilla y aquí ves justo qué corregir, en pasos simples.</p>
-    <p style="font-size:12px">Detecta sola la plantilla: Factura, Complemento de Pago, Global, Nota de Crédito, Retenciones…</p>
+    <div class="instrucciones">
+      <div class="eyebrow">Soporte · Facturación Masiva</div>
+      <h2>Arrastra el archivo .CSV aquí o haz clic para elegirlo</h2>
+      <p>El cliente comparte su plantilla y aquí ves justo qué corregir, en pasos simples.</p>
+      <p style="font-size:12px">Detecta sola la plantilla: Factura, Complemento de Pago, Global, Nota de Crédito, Retenciones…</p>
+    </div>
     <input type="file" id="file" accept=".csv,text/csv">
   </label>
 
