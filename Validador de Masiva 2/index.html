@@ -38,6 +38,9 @@
 
   /* Dropzone */
   .drop {
+    /* display:block es obligatorio: <label> es inline por defecto y la caja se
+       fragmentaba en varios rectángulos, recortando el icono de la flecha. */
+    display: block;
     border: 2px dashed var(--grey-200); border-radius: 10px; padding: 48px 20px;
     text-align: center; background: var(--white); transition: .15s; cursor: pointer;
     box-shadow: 0 2px 16px rgba(0,0,0,0.04);
@@ -47,8 +50,8 @@
   .drop p { color: var(--grey-700); margin: 4px 0; font-size: 14px; }
   .drop .eyebrow { font-size: 12px; text-transform: uppercase; letter-spacing:.6px; font-weight:600; color: var(--blue); }
   .drop .iconbox { width:64px;height:64px;border-radius:10px;background:var(--light-blue);
-    display:inline-flex;align-items:center;justify-content:center;margin-bottom:6px; }
-  .drop .iconbox svg { width:32px;height:32px;stroke:var(--midnight);fill:none;stroke-width:1.6; }
+    display:flex;align-items:center;justify-content:center;margin:0 auto 6px;flex:none; }
+  .drop .iconbox svg { display:block;width:32px;height:32px;stroke:var(--midnight);fill:none;stroke-width:1.6; }
   input[type=file] { display: none; }
 
   /* Banner */
